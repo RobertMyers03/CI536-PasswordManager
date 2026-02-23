@@ -7,18 +7,19 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.PasswordField?>
 <VBox alignment="CENTER" prefHeight="400.0" prefWidth="600.0" spacing="20.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.StartLogin">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
 
-    <Label fx:id="welcomeText" />
+
    <Label fx:id="errorLabel" text="Label" visible="false" />
    <TextField fx:id="usernameField" maxHeight="-Infinity" maxWidth="-Infinity" promptText="Enter username" />
-   <TextField fx:id="passwordField" maxHeight="-Infinity" maxWidth="-Infinity" promptText="Enter Password" />
+   <PasswordField fx:id="passwordField" maxHeight="-Infinity" maxWidth="-Infinity" promptText="Enter Password" />
    <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
       <children>
-         <Button mnemonicParsing="false" text="Forgot Password" />
+         <Button mnemonicParsing="false" text="Create Account" />
          <Button fx:id="loginButton" mnemonicParsing="false" onAction="#HandleLoginButton" text="Login" />
       </children>
    </HBox>
