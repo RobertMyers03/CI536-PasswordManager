@@ -28,7 +28,7 @@ public class LoginController {
     }
 
     @FXML
-    public void HandleLoginButton(ActionEvent event) throws IOException{
+    public void HandleLoginButton(ActionEvent event) throws IOException{ // temporary login details
         String username = usernameField.getText();
         String password = passwordField.getText();
 
