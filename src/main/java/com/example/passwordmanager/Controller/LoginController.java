@@ -1,7 +1,10 @@
 package com.example.passwordmanager.Controller;
 
+<<<<<<<< HEAD:src/main/java/com/example/passwordmanager/Controller/LoginController.java
 import com.example.passwordmanager.PasswordManagerApplication;
 import javafx.event.ActionEvent;
+========
+>>>>>>>> origin/dev:src/main/java/com/example/passwordmanager/Controller/StartLogin.java
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
