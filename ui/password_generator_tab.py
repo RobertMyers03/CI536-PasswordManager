@@ -13,8 +13,7 @@ class PasswordGeneratorTab(ctk.CTkFrame):
 
         form = ctk.CTkFrame(self, fg_color="transparent")
         form.pack(fill="both", expand=True, padx=30, pady=8)
-
-        # ── Length ────────────────────────────────────────────────────────────
+ 
         length_row = ctk.CTkFrame(form, fg_color="transparent")
         length_row.pack(fill="x", pady=(10, 2))
         ctk.CTkLabel(length_row, text="Password Length",
@@ -28,7 +27,6 @@ class PasswordGeneratorTab(ctk.CTkFrame):
                       variable=self._length_var,
                       command=self._on_length_change).pack(fill="x", pady=(4, 10))
 
-        # ── Options ───────────────────────────────────────────────────────────
         ctk.CTkLabel(form, text="Include Characters",
                      anchor="w", font=ctk.CTkFont(size=13)).pack(fill="x", pady=(4, 6))
 
@@ -49,13 +47,11 @@ class PasswordGeneratorTab(ctk.CTkFrame):
         ctk.CTkCheckBox(opts, text="Exclude ambiguous characters  (0 O l I 1)",
                         variable=self._no_ambig).grid(row=2, column=0, columnspan=2, sticky="w", pady=3)
 
-        # ── Generate button ───────────────────────────────────────────────────
         ctk.CTkButton(form, text="\u26a1  Generate Strong Password",
                       height=36, fg_color="transparent", border_width=1,
                       font=ctk.CTkFont(size=12),
                       command=self._generate).pack(fill="x", pady=(14, 6))
 
-        # ── Output row ────────────────────────────────────────────────────────
         ctk.CTkLabel(form, text="Generated Password",
                      anchor="w", font=ctk.CTkFont(size=13)).pack(fill="x", pady=(10, 2))
 
@@ -71,11 +67,8 @@ class PasswordGeneratorTab(ctk.CTkFrame):
                       fg_color="transparent", border_width=1,
                       command=self._copy).pack(side="right")
 
-        # ── Strength ──────────────────────────────────────────────────────────
         self._strength = ctk.CTkLabel(form, text="", font=ctk.CTkFont(size=12))
         self._strength.pack(pady=(6, 2))
-
-    # ── Helpers ───────────────────────────────────────────────────────────────
 
     def _on_length_change(self, value):
         self._length_label.configure(text=str(int(value)))

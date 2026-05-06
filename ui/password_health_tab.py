@@ -21,7 +21,6 @@ class PasswordHealthTab(ctk.CTkFrame):
         form = ctk.CTkFrame(self, fg_color="transparent")
         form.pack(fill="both", expand=True, padx=30, pady=8)
 
-        # ── Input ─────────────────────────────────────────────────────────────
         ctk.CTkLabel(form, text="Password to Check",
                      anchor="w", font=ctk.CTkFont(size=13)).pack(fill="x", pady=(10, 2))
 
@@ -39,23 +38,18 @@ class PasswordHealthTab(ctk.CTkFrame):
                       fg_color="transparent", border_width=1,
                       command=self._toggle).pack(side="right")
 
-        # ── Live strength ─────────────────────────────────────────────────────
         self._strength = ctk.CTkLabel(form, text="", font=ctk.CTkFont(size=12))
         self._strength.pack(pady=(6, 2))
 
-        # ── Check button ──────────────────────────────────────────────────────
         ctk.CTkButton(form, text="\U0001fa7a  Check Password",
                       height=42, font=ctk.CTkFont(size=14, weight="bold"),
                       command=self._check).pack(fill="x", pady=(6, 10))
 
-        # ── Results (scrollable) ──────────────────────────────────────────────
         self._results = ctk.CTkScrollableFrame(form, fg_color="transparent")
         self._results.pack(fill="both", expand=True, pady=(4, 0))
 
-        # Live update
         self._pw_var.trace_add("write", lambda *_: self._live_strength())
 
-    # ── Helpers ───────────────────────────────────────────────────────────────
 
     def _toggle(self):
         self._show_pw = not self._show_pw
@@ -124,20 +118,17 @@ class PasswordHealthTab(ctk.CTkFrame):
         if re.search(r"(012|123|234|345|456|567|678|789|890|abc|bcd|cde|qwe|wer)", pw.lower()):
             issues.append(("\u26a0\ufe0f", "Sequential pattern detected (e.g. \'123\' or \'abc\').", "orange"))
 
-        # Entropy stat
         pool = sum([26 if re.search(r"[a-z]", pw) else 0,
                     26 if re.search(r"[A-Z]", pw) else 0,
                     10 if re.search(r"\d",    pw) else 0,
                     32 if re.search(r"[^A-Za-z0-9]", pw) else 0])
         entropy = len(pw) * math.log2(pool) if pool else 0
 
-        # Entropy row
         ent_label = f"Estimated entropy: {entropy:.0f} bits"
         ent_color = "#4caf7d" if entropy >= 50 else ("orange" if entropy >= 30 else "#e05252")
         ent_icon  = "\u2705" if entropy >= 50 else ("\u26a0\ufe0f" if entropy >= 30 else "\u274c")
         issues.append((ent_icon, ent_label, ent_color))
 
-        # Render each issue as a label row (same style as strength label in add_entry_screen)
         for icon, msg, color in issues:
             ctk.CTkLabel(self._results, text=f"{icon}  {msg}",
                          anchor="w", font=ctk.CTkFont(size=12),
