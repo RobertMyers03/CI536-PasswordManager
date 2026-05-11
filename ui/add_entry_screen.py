@@ -29,12 +29,12 @@ class AddEntryScreen(ctk.CTkToplevel):
 
         ctk.CTkLabel(form, text="Website / App Name",
                      anchor="w", font=ctk.CTkFont(size=13)).pack(fill="x", pady=(10, 2))
-        self._site = ctk.CTkEntry(form, placeholder_text="e.g. Google, Netflix", height=42)
+        self._site = ctk.CTkEntry(form, placeholder_text="e.g. Outlook, Google", height=42)
         self._site.pack(fill="x")
 
         ctk.CTkLabel(form, text="Username or Email",
                      anchor="w", font=ctk.CTkFont(size=13)).pack(fill="x", pady=(14, 2))
-        self._username = ctk.CTkEntry(form, placeholder_text="e.g. john@email.com", height=42)
+        self._username = ctk.CTkEntry(form, placeholder_text="e.g. unibrighton@email.com", height=42)
         self._username.pack(fill="x")
 
         ctk.CTkLabel(form, text="Password",

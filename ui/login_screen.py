@@ -31,7 +31,7 @@ class LoginScreen(ctk.CTkFrame):
 
         ctk.CTkLabel(container, text="\U0001f510",
                      font=ctk.CTkFont(size=56)).pack(pady=(40, 6))
-        ctk.CTkLabel(container, text="SecureVault",
+        ctk.CTkLabel(container, text="I360 Vault",
                      font=ctk.CTkFont(size=28, weight="bold")).pack()
 
         subtitle = ("Create your master password to get started"

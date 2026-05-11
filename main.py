@@ -132,8 +132,6 @@ class PasswordGeneratorTab(ctk.CTkFrame):
         self._strength_label.configure(text=f"Strength: {label}", text_color=color)
         self._strength_bar.configure(progress_color=color)
 
-
-
 class PasswordHealthTab(ctk.CTkFrame):
 
     COMMON_PASSWORDS = {
@@ -211,7 +209,7 @@ class PasswordHealthTab(ctk.CTkFrame):
         score = 0
 
         if len(pw) >= 8:  score += 1
-        else: issues.append(("❌", "Too short — use at least 8 characters"))
+        else: issues.append(("❌", "Too short, use at least 8 characters"))
 
         if len(pw) >= 12: score += 1
         else: issues.append(("⚠️", "Consider 12+ characters for better security"))
@@ -228,20 +226,20 @@ class PasswordHealthTab(ctk.CTkFrame):
         else: issues.append(("❌", "No digits"))
 
         if re.search(r"[^A-Za-z0-9]", pw): score += 1
-        else: issues.append(("⚠️", "No special characters — add one for extra strength"))
+        else: issues.append(("⚠️", "No special characters, add one for extra strength"))
 
         if pw.lower() in self.COMMON_PASSWORDS:
             score = max(0, score - 3)
-            issues.insert(0, ("🚨", "This is a commonly-used password — do not use it!"))
+            issues.insert(0, ("🚨", "This is a commonly used password , don't use it!"))
 
         if re.search(r"(.)\1{2,}", pw):
-            issues.append(("⚠️", "Repeated characters detected (e.g. 'aaa')"))
+            issues.append(("⚠️", "Repeated characters detected (ex. 'aaa')"))
 
         if re.search(r"(012|123|234|345|456|567|678|789|890|abc|bcd|cde|qwe|wer)", pw.lower()):
-            issues.append(("⚠️", "Sequential pattern detected (e.g. '123' or 'abc')"))
+            issues.append(("⚠️", "pattern detected (e.g. '123' or 'abc')"))
 
         if not issues:
-            issues.append(("✅", "No issues found — this looks like a strong password!"))
+            issues.append(("✅", "No issues found, this looks like a strong password!"))
 
         return score, issues
 
@@ -320,14 +318,14 @@ class PasswordHealthTab(ctk.CTkFrame):
         import math
         return len(pw) * math.log2(pool)
     
-class SecureVaultApp(ctk.CTk):
+class I360VaultApp(ctk.CTk):
     def __init__(self):
         super().__init__()
-        self.title("SecureVault — Password Manager")
+        self.title("I360 Vault - Password Manager")
         self.geometry("960x620")
         self.minsize(860, 540)
         self._vault_key = None
-        self._frame = None
+        self._frame     = None
         self._show_login()
 
     def _show_login(self):
@@ -351,5 +349,5 @@ class SecureVaultApp(ctk.CTk):
 
 
 if __name__ == "__main__":
-    app = SecureVaultApp()
+    app = I360VaultApp()
     app.mainloop()
