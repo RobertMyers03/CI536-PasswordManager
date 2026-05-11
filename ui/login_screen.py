@@ -5,19 +5,27 @@ import database as db
 import auth
 import crypto
 
+MAX_ATTEMPTS   = 5 
+LOCKOUT_SECS   = 30  
+
 
 class LoginScreen(ctk.CTkFrame):
     def __init__(self, parent, on_success):
         super().__init__(parent, fg_color="transparent")
-        self.parent = parent
+        self.parent     = parent
         self.on_success = on_success
 
         db.initialize_db()
         self.is_first_run = db.is_first_run()
+
+        self._failed_attempts = 0   
+        self._locked          = False
+        self._countdown_id    = None
+
         self._build_ui()
 
     def _build_ui(self):
-        container = ctk.CTkFrame(self, width=420, height=550)
+        container = ctk.CTkFrame(self, width=420, height=580)
         container.place(relx=0.5, rely=0.5, anchor="center")
         container.pack_propagate(False)
 
@@ -50,6 +58,11 @@ class LoginScreen(ctk.CTkFrame):
                                       font=ctk.CTkFont(size=12))
         self.error_lbl.pack(pady=4)
 
+        self.attempt_lbl = ctk.CTkLabel(container, text="",
+                                        text_color="#e09b52",
+                                        font=ctk.CTkFont(size=11))
+        self.attempt_lbl.pack(pady=(0, 2))
+
         btn_text = "Create Vault" if self.is_first_run else "Unlock Vault"
         self.submit_btn = ctk.CTkButton(
             container, text=btn_text, width=320, height=46,
@@ -79,7 +92,34 @@ class LoginScreen(ctk.CTkFrame):
             if self.confirm_entry:
                 self.confirm_entry.configure(state="normal")
 
+    def _start_lockout(self):
+        self._locked = True
+        self.pw_entry.configure(state="disabled")
+        self.submit_btn.configure(state="disabled")
+        self._tick(LOCKOUT_SECS)
+
+    def _tick(self, remaining: int):
+        if remaining <= 0:
+            self._locked = False
+            self._failed_attempts = 0
+            self.pw_entry.configure(state="normal")
+            self.pw_entry.delete(0, "end")
+            self.pw_entry.focus()
+            self.submit_btn.configure(state="normal", text="Unlock Vault")
+            self.error_lbl.configure(text="")
+            self.attempt_lbl.configure(text="")
+            return
+
+        self.error_lbl.configure(
+            text=f"\U0001f512 Too many failed attempts. Try again in {remaining}s.")
+        self.submit_btn.configure(
+            text=f"Locked ({remaining}s)", state="disabled")
+        self._countdown_id = self.after(1000, lambda: self._tick(remaining - 1))
+
     def _submit(self):
+        if self._locked:
+            return
+
         password = self.pw_entry.get()
 
         if not password:
@@ -100,7 +140,6 @@ class LoginScreen(ctk.CTkFrame):
         self.error_lbl.configure(text="")
         self._set_loading(True)
 
-        # Run bcrypt in background so the UI does not freeze
         thread = threading.Thread(
             target=self._do_auth, args=(password,), daemon=True)
         thread.start()
@@ -108,19 +147,21 @@ class LoginScreen(ctk.CTkFrame):
     def _do_auth(self, password):
         try:
             if self.is_first_run:
-                pw_hash   = auth.hash_password(password)
+                pw_hash    = auth.hash_password(password)
                 vault_salt = crypto.generate_salt()
                 db.save_master(pw_hash, vault_salt)
-                vault_key = crypto.derive_key(password, vault_salt)
+                vault_key  = crypto.derive_key(password, vault_salt)
                 self.after(0, lambda: self.on_success(vault_key))
             else:
                 master = db.get_master()
                 if not master:
-                    self.after(0, lambda: self._auth_failed("No vault found. Please restart."))
+                    self.after(0, lambda: self._auth_failed(
+                        "No vault found. Please restart."))
                     return
                 pw_hash, vault_salt = master
                 if auth.verify_password(password, pw_hash):
                     vault_key = crypto.derive_key(password, vault_salt)
+                    self.after(0, lambda: self._reset_attempts())
                     self.after(0, lambda: self.on_success(vault_key))
                 else:
                     self.after(0, lambda: self._auth_failed(
@@ -128,8 +169,22 @@ class LoginScreen(ctk.CTkFrame):
         except Exception as e:
             self.after(0, lambda: self._auth_failed(f"Error: {e}"))
 
+    def _reset_attempts(self):
+        self._failed_attempts = 0
+        self.attempt_lbl.configure(text="")
+
     def _auth_failed(self, message: str):
         self._set_loading(False)
+        self._failed_attempts += 1
+        remaining_attempts = MAX_ATTEMPTS - self._failed_attempts
+
         self.error_lbl.configure(text=message)
         self.pw_entry.delete(0, "end")
         self.pw_entry.focus()
+
+        if self._failed_attempts >= MAX_ATTEMPTS:
+            self.attempt_lbl.configure(text="")
+            self._start_lockout()
+        else:
+            self.attempt_lbl.configure(
+                text=f"{remaining_attempts} attempt{'s' if remaining_attempts != 1 else ''} remaining before lockout")
