@@ -7,6 +7,7 @@ import crypto
 
 from ui.password_generator_tab import PasswordGeneratorTab
 from ui.password_health_tab    import PasswordHealthTab
+from ui.import_tab             import ImportTab
 
 
 def _clipboard_copy(widget, text):
@@ -45,13 +46,12 @@ class DashboardScreen(ctk.CTkFrame):
         self._build_ui()
         self._load()
         self._load_ssh_keys()
-
     def _build_ui(self):
         sidebar = ctk.CTkFrame(self, width=210, corner_radius=0)
         sidebar.pack(side="left", fill="y")
         sidebar.pack_propagate(False)
 
-        ctk.CTkLabel(sidebar, text="\U0001f510 I360Vault",
+        ctk.CTkLabel(sidebar, text="\U0001f510 I360 Vault",
                      font=ctk.CTkFont(size=18, weight="bold")).pack(
             pady=(30, 20), padx=15)
 
@@ -88,14 +88,15 @@ class DashboardScreen(ctk.CTkFrame):
                       height=40, font=ctk.CTkFont(size=13),
                       fg_color="transparent", border_width=1,
                       command=self._logout).pack(padx=15, pady=20, fill="x")
-
         self._main = ctk.CTkFrame(self, fg_color="transparent")
         self._main.pack(side="right", fill="both", expand=True, padx=20, pady=20)
+
         self._vault_frame = ctk.CTkFrame(self._main, fg_color="transparent")
         self._vault_frame.pack(fill="both", expand=True)
 
         self._tabs = ctk.CTkTabview(self._vault_frame, anchor="nw")
         self._tabs.pack(fill="both", expand=True)
+
         vault_tab = self._tabs.add("\U0001f5c4 Passwords")
 
         hdr = ctk.CTkFrame(vault_tab, fg_color="transparent")
@@ -115,6 +116,7 @@ class DashboardScreen(ctk.CTkFrame):
 
         self._list = ctk.CTkScrollableFrame(vault_tab)
         self._list.pack(fill="both", expand=True)
+
         ssh_tab = self._tabs.add("\U0001f5dd SSH Keys")
 
         ssh_hdr = ctk.CTkFrame(ssh_tab, fg_color="transparent")
@@ -130,6 +132,11 @@ class DashboardScreen(ctk.CTkFrame):
         self._entries_frame = ctk.CTkScrollableFrame(ssh_tab)
         self._entries_frame.pack(fill="both", expand=True)
 
+        import_tab = self._tabs.add("\U0001f4e5 Import")
+        ImportTab(import_tab, vault_key=self.vault_key,
+                  on_import_done=self._load).pack(fill="both", expand=True)
+
+        # ── Sidebar tool frames ───────────────────────────────────────────────
         self._gen_frame = ctk.CTkFrame(self._main, fg_color="transparent")
         PasswordGeneratorTab(self._gen_frame).pack(fill="both", expand=True)
 
@@ -161,10 +168,10 @@ class DashboardScreen(ctk.CTkFrame):
         self._active_sidebar_btn = btn
 
     def _switch_tab(self, tab_name):
-        """Switch to a named tab inside the vault frame."""
         self._show_vault()
         if tab_name == "ssh_keys":
             self._tabs.set("\U0001f5dd SSH Keys")
+
 
     def _load(self):
         self.all_entries = []
