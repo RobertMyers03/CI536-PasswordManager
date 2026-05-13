@@ -135,8 +135,6 @@ class DashboardScreen(ctk.CTkFrame):
         import_tab = self._tabs.add("\U0001f4e5 Import")
         ImportTab(import_tab, vault_key=self.vault_key,
                   on_import_done=self._load).pack(fill="both", expand=True)
-
-        # ── Sidebar tool frames ───────────────────────────────────────────────
         self._gen_frame = ctk.CTkFrame(self._main, fg_color="transparent")
         PasswordGeneratorTab(self._gen_frame).pack(fill="both", expand=True)
 
